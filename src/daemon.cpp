@@ -36,4 +36,3 @@ Daemon::Daemon() {
     producer =  new Producer(buffer, 50);
     consumer = new Consumer(buffer, 50);
 }
-

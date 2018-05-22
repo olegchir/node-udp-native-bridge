@@ -15,7 +15,7 @@ public:
     void join();
 
     Daemon();
-    ~Daemon();
+    virtual ~Daemon();
 
 private:
     Buffer *buffer;

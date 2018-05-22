@@ -3,7 +3,7 @@ project(node_native_buffer)
 
 set(CMAKE_CXX_STANDARD 11)
 
-add_executable(node_native_buffer cpptest/app.cpp src/datasource.hpp src/data.hpp src/daemon.cpp src/daemon.hpp src/udpclient.cpp src/udpclient.h src/nodebridge.cpp src/nodebridge.h src/terminable.hpp)
+add_executable(node_native_buffer cpptest/app.cpp src/datasource.hpp src/data.hpp src/daemon.cpp src/daemon.hpp src/udpclient.cpp src/udpclient.h src/nodebridge.cpp src/nodebridge.h src/terminable.hpp src/main.h)
 
 if (CMAKE_SYSTEM_NAME MATCHES Darwin)
     if(CMAKE_GENERATOR STREQUAL Xcode)
