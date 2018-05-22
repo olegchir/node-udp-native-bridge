@@ -10,8 +10,19 @@
 
 class Daemon {
 public:
-    static void run();
-    static void run_async();
+    void start();
+    void stop();
+    void join();
+
+    Daemon();
+    ~Daemon();
+
+private:
+    Buffer *buffer;
+    Producer *producer;
+    Consumer *consumer;
+    std::thread *producer_thread;
+    std::thread *consumer_thread;
 };
 
 

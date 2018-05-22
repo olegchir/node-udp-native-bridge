@@ -4,18 +4,36 @@
 
 #include "daemon.hpp"
 
-void Daemon::run()  {
-    Buffer b(INT_MAX);
-    Producer p(&b, 50);
-    Consumer c(&b, 50);
 
-    std::thread producer_thread(&Producer::run, &p);
-    std::thread consumer_thread(&Consumer::run, &c);
-
-    producer_thread.join();
-    consumer_thread.join();
+void Daemon::start() {
+    producer_thread = new std::thread(&Producer::run, this->producer);
+    consumer_thread = new std::thread(&Consumer::run, this->consumer);
+//    producer_thread = new std::thread([&]() { producer->run(); });
+//    consumer_thread = new std::thread([&]() { consumer->run(); });
 }
 
-void Daemon::run_async() {
-    
+
+void Daemon::stop() {
+    producer -> terminate();
+    consumer -> terminate();
 }
+
+void Daemon::join() {
+    producer_thread -> join();
+    consumer_thread -> join();
+}
+
+Daemon::~Daemon() {
+    delete producer;
+    delete consumer;
+    delete producer_thread;
+    delete consumer_thread;
+    delete buffer;
+}
+
+Daemon::Daemon() {
+    buffer = new Buffer(INT_MAX);
+    producer =  new Producer(buffer, 50);
+    consumer = new Consumer(buffer, 50);
+}
+

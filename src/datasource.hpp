@@ -9,6 +9,7 @@
 #include "data.hpp"
 #include "udpclient.h"
 #include "nodebridge.h"
+#include "terminable.hpp"
 
 //https://codereview.stackexchange.com/questions/84109/a-multi-threaded-producer-consumer-with-c11
 class Buffer
@@ -48,7 +49,7 @@ public:
 };
 
 
-class Producer
+class Producer: public Terminable
 {
 public:
     unsigned int latency = 50;
@@ -58,17 +59,17 @@ public:
         this->latency = latency;
     }
     void run() {
-        while (true) {
-            buffer_->add(UDPClient::next_data());
+        while (!terminating()) {
+            const Data &data = UDPClient::next_data();
+            buffer_->add(data);
             std::this_thread::sleep_for(std::chrono::milliseconds(latency));
         }
     }
 private:
     Buffer *buffer_;
-
 };
 
-class Consumer
+class Consumer: public Terminable
 {
 public:
     unsigned int latency = 50;
@@ -78,7 +79,7 @@ public:
         this->latency = latency;
     }
     void run() {
-        while (true) {
+        while (!terminating()) {
             Data num = buffer_->remove();
             NodeBridge::consume(num);
             std::this_thread::sleep_for(std::chrono::milliseconds(latency));
