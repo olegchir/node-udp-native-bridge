@@ -5,21 +5,38 @@
 var PORT = 11111;
 var HOST = '127.0.0.1';
 var numberOfPackets = 0;
-var maxNumberOfPackets = 10;
+var maxNumberOfPackets = 1000;
 
 //======================================================================================================================
 
 var dgram = require('dgram');
 var NanoTimer = require('nanotimer');
+var microtime = require('microtime')
+
+var exit = function() {
+    process.exit();
+};
+
+var startTime = null;
+var endTime = null;
 
 var message = Buffer.from('0');
 var client = dgram.createSocket('udp4');
+var interval = null;
 
-var generateData = function(controller) {
+var generateData = function(nanotimer) {
     if (numberOfPackets > maxNumberOfPackets ) {
+        endTime = microtime.now();
         console.info("We're finished here!");
-        controller.nanotimer.clearInterval(controller.interval());
-        process.exit();
+        nanotimer.clearInterval();
+
+        var microsecondPrecision = 1000000;
+        var timeDiff = endTime - startTime;
+        var timeDiffSeconds = timeDiff / microsecondPrecision;
+        var throughput = numberOfPackets / timeDiffSeconds;
+
+        console.log("Overall time: %d msec (%d sec), %d packets in a second", timeDiff, timeDiffSeconds, throughput);
+        exit();
     }
     try {
         client.send(message, 0, message.length, PORT, HOST, function (err, bytes) {
@@ -53,9 +70,7 @@ var errFunc = function(err) {
 
 var nanoTimer = new NanoTimer();
 
-var interval = null;
-var controller = {nanotimer: nanoTimer, interval: function() {return interval;} };
-
-interval = nanoTimer.setInterval(generateData, [controller], '1n', errFunc);
+startTime = microtime.now();
+nanoTimer.setInterval(generateData, [nanoTimer], '1n', errFunc);
 
 client.close();
