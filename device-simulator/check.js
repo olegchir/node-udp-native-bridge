@@ -10,13 +10,13 @@ server.on('listening', function () {
 });
 
 server.on('message', function (message, remote) {
-    console.log(remote.address + ':' + remote.port + ' - ' + utf8IntArrayToString(message));
+    console.log(remote.address + ':' + remote.port + ' - ' + unsignedInt8ArrayToString(message));
 
 });
 
 server.bind(PORT, HOST);
 
-var utf8IntArrayToString = function (data) {
+var unsignedInt8ArrayToString = function (data) {
     var result = "[";
     var elem = null;
     for (let i = 0; i < data.length; i++) {
