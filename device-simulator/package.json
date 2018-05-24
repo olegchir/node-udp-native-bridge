@@ -1,0 +1,21 @@
+{
+  "name": "device-simulator",
+  "version": "1.0.0",
+  "description": "",
+  "main": "check.js",
+  "scripts": {
+    "start": "node simulator.js",
+    "check": "node check.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "npm": "^6.1.0"
+  },
+  "dependencies": {
+    "dgram": "^1.0.1",
+    "microtime": "^2.1.8",
+    "nanotimer": "^0.3.15"
+  }
+}

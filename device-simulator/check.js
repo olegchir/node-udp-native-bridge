@@ -10,8 +10,22 @@ server.on('listening', function () {
 });
 
 server.on('message', function (message, remote) {
-    console.log(remote.address + ':' + remote.port +' - ' + message);
+    console.log(remote.address + ':' + remote.port + ' - ' + utf8IntArrayToString(message));
 
 });
 
 server.bind(PORT, HOST);
+
+var utf8IntArrayToString = function (data) {
+    var result = "[";
+    var elem = null;
+    for (let i = 0; i < data.length; i++) {
+        elem = data[i];
+        result += elem;
+        if (i !== data.length - 1) {
+            result += ", ";
+        }
+    }
+    result += "]";
+    return result;
+};

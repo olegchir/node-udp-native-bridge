@@ -4,7 +4,6 @@
 
 var PORT = 11111;
 var HOST = '127.0.0.1';
-var numberOfPackets = 0;
 var maxNumberOfPackets = 1000;
 
 //======================================================================================================================
@@ -13,21 +12,37 @@ var dgram = require('dgram');
 var NanoTimer = require('nanotimer');
 var microtime = require('microtime')
 
-var exit = function() {
+var exit = function () {
     process.exit();
 };
+
+//======================================================================================================================
+
+var numberOfPackets = 0;
+var numberOfResults = 0;
 
 var startTime = null;
 var endTime = null;
 
-var message = Buffer.from('0');
 var client = dgram.createSocket('udp4');
-var interval = null;
 
-var generateData = function(nanotimer) {
-    if (numberOfPackets > maxNumberOfPackets ) {
+function getNanoSecTime() {
+    var hrTime = process.hrtime();
+    return hrTime[0] * 1000000000 + hrTime[1];
+}
+
+var nextBuffer = function () {
+    var nextTime = function* () {
+        for (let i = 0; i < 3; i++) {
+            yield numberOfResults++;
+        }
+    }();
+    return new Uint8Array(nextTime);
+};
+
+var generateData = function (nanotimer) {
+    if (numberOfPackets > maxNumberOfPackets) {
         endTime = microtime.now();
-        console.info("We're finished here!");
         nanotimer.clearInterval();
 
         var microsecondPrecision = 1000000;
@@ -39,13 +54,13 @@ var generateData = function(nanotimer) {
         exit();
     }
     try {
+        var message = nextBuffer();
+        console.log(message.toString());
         client.send(message, 0, message.length, PORT, HOST, function (err, bytes) {
             if (err) {
                 console.error(err);
             } else {
                 numberOfPackets++;
-                message = Buffer.from(numberOfPackets.toString());
-                console.log('UDP message sent to ' + HOST + ':' + PORT);
             }
         });
     } catch (e) {
@@ -62,8 +77,8 @@ var generateData = function(nanotimer) {
     }
 };
 
-var errFunc = function(err) {
-    if(err) {
+var errFunc = function (err) {
+    if (err) {
         console.error(err);
     }
 };
